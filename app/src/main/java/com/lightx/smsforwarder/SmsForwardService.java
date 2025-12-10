@@ -1,11 +1,21 @@
+package com.lightx.smsforwarder;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+
+import androidx.annotation.Nullable;
+
 public class SmsForwardService extends Service {
 
-    // باقي الكود...
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        // This service is not bound
+        return null;
+    }
 
-    private String buildEmailJson(String subject, String content) {
+    public String buildEmailJson(String subject, String content) {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append("\"sender\": {\"name\": \"LightX SMS Forwarder\", \"email\": \"")
@@ -24,5 +34,17 @@ public class SmsForwardService extends Service {
         return sb.toString();
     }
 
-    // باقي الكود...
+    // Helper function
+    private String escapeJson(String text) {
+        if (text == null) return "";
+        return text.replace("\"", "\\\"")
+                   .replace("\n", "\\n")
+                   .replace("\r", "\\r");
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        // هنا تقدر تحط كود إرسال الإيميل
+        return START_NOT_STICKY;
+    }
 }
