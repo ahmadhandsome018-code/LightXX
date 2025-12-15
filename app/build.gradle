@@ -12,9 +12,25 @@ android {
         versionName "1.0"
     }
 
+    // 👇👇👇 التوقيع هنا
+    signingConfigs {
+        release {
+            if (System.getenv("MYAPP_UPLOAD_STORE_FILE") != null) {
+                storeFile file(System.getenv("MYAPP_UPLOAD_STORE_FILE"))
+                storePassword System.getenv("MYAPP_UPLOAD_STORE_PASSWORD")
+                keyAlias System.getenv("MYAPP_UPLOAD_KEY_ALIAS")
+                keyPassword System.getenv("MYAPP_UPLOAD_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release   // 👈 مهم جداً
+        }
+        debug {
+            // debug unsigned عادي
         }
     }
 
