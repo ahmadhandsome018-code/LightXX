@@ -1,4 +1,4 @@
-name: Android CI
+name: Android CI (Signed Release)
 
 on:
   push:
@@ -9,7 +9,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout project
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -22,24 +23,26 @@ jobs:
         with:
           gradle-version: '8.4'
 
-      # 👇👇 التوقيع
+      # فك تشفير keystore
       - name: Decode keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore.jks
+          ls -la
 
-      - name: Configure signing
+      # إعداد متغيرات التوقيع
+      - name: Export signing env vars
         run: |
-          echo "MYAPP_UPLOAD_STORE_FILE=keystore.jks" >> $GITHUB_ENV
           echo "MYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
           echo "MYAPP_UPLOAD_KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
           echo "MYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> $GITHUB_ENV
 
-      - name: Build Release APK (module app)
-        working-directory: ./app
-        run: gradle assembleRelease
+      # بناء APK موقّع
+      - name: Build signed Release APK
+        run: ./gradlew assembleRelease
 
-      - name: Upload artifact
+      # رفع الناتج
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: lightx-apk
-          path: app/build/outputs/**/*.apk
+          name: lightx-signed-apk
+          path: app/build/outputs/apk/release/*.apk
