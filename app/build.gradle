@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 
 android {
-
     namespace "com.lightx.smsforwarder"
     compileSdk 34
 
@@ -15,7 +14,7 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(System.getenv("MYAPP_UPLOAD_STORE_FILE"))
+            storeFile file("$rootDir/app/" + System.getenv("MYAPP_UPLOAD_STORE_FILE"))
             storePassword System.getenv("MYAPP_UPLOAD_STORE_PASSWORD")
             keyAlias System.getenv("MYAPP_UPLOAD_KEY_ALIAS")
             keyPassword System.getenv("MYAPP_UPLOAD_KEY_PASSWORD")
