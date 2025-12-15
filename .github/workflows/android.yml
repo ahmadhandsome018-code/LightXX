@@ -22,10 +22,21 @@ jobs:
         with:
           gradle-version: '8.4'
 
+      # 👇👇 التوقيع
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore.jks
+
+      - name: Configure signing
+        run: |
+          echo "MYAPP_UPLOAD_STORE_FILE=keystore.jks" >> $GITHUB_ENV
+          echo "MYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> $GITHUB_ENV
+          echo "MYAPP_UPLOAD_KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> $GITHUB_ENV
+          echo "MYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> $GITHUB_ENV
+
       - name: Build Release APK (module app)
         working-directory: ./app
-        run: |
-          gradle assembleRelease
+        run: gradle assembleRelease
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
